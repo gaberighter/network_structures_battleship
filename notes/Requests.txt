@@ -1,8 +1,12 @@
 Post: create game /startgame
 - request: doesn't need anything
+- response: gameId for client to send with any future messages
 
 Post: login with code /login
 - request: json with code:ABCD
+- response: gameId for client to send with any future messages
+
+
 
 Post: initial arrangement of the ships /setup
 - request: json (ship, rotation, position) for each ship
@@ -10,3 +14,10 @@ Post: initial arrangement of the ships /setup
 
 Post: move (coordinates) /shoot
 - request: json x: y:
+
+ship names:
+CARRIER
+BATTLESHIP
+SUBMARINE
+CRUISER
+DESTROYER
