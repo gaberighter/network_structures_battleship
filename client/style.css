@@ -1,0 +1,13 @@
+#player-board {
+    justify-self: center;
+    border: 1px solid black;
+    width: 90%;
+    height: 40%;
+}
+
+#target-board {
+    justify-self: center;
+    border: 1px solid black;
+    width: 90%;
+    height: 40%;
+}
