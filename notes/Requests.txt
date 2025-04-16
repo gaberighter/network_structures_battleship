@@ -3,7 +3,7 @@ Post: create game /startgame
 - response: gameId for client to send with any future messages
 
 Post: login with code /login
-- request: json with code:ABCD
+- request: json with code:ABCD and userid: 000
 - response: gameId for client to send with any future messages
 
 
