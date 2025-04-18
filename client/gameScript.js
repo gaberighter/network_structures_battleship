@@ -7,6 +7,22 @@ onload = initGamePage;
 function initGamePage(){
     createTargetBoard();
     createShipBoard();
+    initSetup()
+}
+
+function initSetup() {
+    initSetupControls()
+}
+
+function initSetupControls() {
+    const controlBox = document.getElementById('control-box');
+    const readyButton = document.createElement('button');
+    readyButton.setAttribute('id', 'ready-button')
+    controlBox.appendChild(readyButton)
+}
+
+function initShips() {
+
 }
 
 function targetCellClick(row, col){
@@ -17,6 +33,7 @@ function createTargetBoard(){
     // Create a 10x10 grid for the target board
     const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
     const targetContainer = document.getElementById('target-board')
+    const width = targetContainer.clientWidth;
     const targetTable = document.createElement('table');
     targetTable.setAttribute('id', 'target-table');
     targetContainer.appendChild(targetTable);
@@ -28,6 +45,7 @@ function createTargetBoard(){
             const cell = document.createElement('td');
             cell.setAttribute('id', `target-cell-${i}-${j}`);
             cell.setAttribute('class', 'target-cell');
+            cell.setAttribute('width', width/11);
             row.appendChild(cell);
             if (i === 0 && j > 0){
                 cell.innerHTML = letters[j-1];
@@ -49,7 +67,8 @@ function createTargetBoard(){
 function createShipBoard(){
     // Create a 10x10 grid for the ship board
     const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-    const shipContainer = document.getElementById('player-board')
+    const shipContainer = document.getElementById('player-board');
+    const width = shipContainer.clientWidth;
     const shipTable = document.createElement('table');
     shipTable.setAttribute('id', 'ship-table');
     shipContainer.appendChild(shipTable);
@@ -61,6 +80,7 @@ function createShipBoard(){
             const cell = document.createElement('td');
             cell.setAttribute('id', `ship-cell-${i}-${j}`);
             cell.setAttribute('class', 'ship-cell');
+            cell.setAttribute("width", width);
             row.appendChild(cell);
             if (i === 0 && j > 0){
                 cell.innerHTML = letters[j-1];

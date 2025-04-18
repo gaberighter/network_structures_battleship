@@ -10,8 +10,10 @@ function initLoginPage(){
     createButton.onclick = createGame
 }
 
-function sendJoinMessage(code, userid) {
-    fetch("../server/login",
+function sendStartMessage(code, userid, state) {
+    const route = "../server/${state}"
+
+    fetch(route,
         {
            method: "POST",
            body: JSON.stringify
@@ -30,11 +32,11 @@ function sendJoinMessage(code, userid) {
 function joinGame() {
     const code = document.getElementById("game-id").value;
     const userid = document.getElementById("user-id").value;
-    sendJoinMessage(code, userid)
+    sendStartnMessage(code, userid, "login")
 }
 
 function createGame() {
     const code = document.getElementById("game-id").value;
     const userid = document.getElementById("user-id").value;
-
+    sendStartMessage(code, userid, "startgame")
 }
