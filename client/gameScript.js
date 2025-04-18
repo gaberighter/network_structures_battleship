@@ -1,4 +1,5 @@
 const shipDict = [{"CARRIER": 5, "BATTLESHIP":4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}]
+const shipNames = ["CARRIER", "BATTLESHIP", "CRUISER", "SUBMARINE", "DESTROYER"]
 
 const shipContainer = document.getElementById('player-board')
 
@@ -12,17 +13,32 @@ function initGamePage(){
 
 function initSetup() {
     initSetupControls()
+    initShips()
 }
 
 function initSetupControls() {
     const controlBox = document.getElementById('control-box');
     const readyButton = document.createElement('button');
     readyButton.setAttribute('id', 'ready-button')
+    const buttonText = document.createTextNode("Start Game")
+    readyButton.appendChild(buttonText)
     controlBox.appendChild(readyButton)
 }
 
 function initShips() {
-
+    const shipBox = document.getElementById('ship-box')
+    for (let i = 0; i < shipNames.length; i++) {
+        const shipContainer = document.createElement("div")
+        const name = `${shipNames[i]}-container`
+        shipContainer.setAttribute("id", name)
+        shipContainer.setAttribute("class", "ship-container")
+        const ship = document.createElement("img")
+        const imgSrc = `images/${shipNames[i]}.png`
+        ship.setAttribute("src", imgSrc)
+        ship.setAttribute("class", "ship-img")
+        shipContainer.appendChild(ship)
+        shipBox.appendChild(shipContainer)
+    }
 }
 
 function targetCellClick(row, col){

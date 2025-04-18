@@ -32,7 +32,7 @@ function sendStartMessage(code, userid, state) {
 function joinGame() {
     const code = document.getElementById("game-id").value;
     const userid = document.getElementById("user-id").value;
-    sendStartnMessage(code, userid, "login")
+    sendStartMessage(code, userid, "login")
 }
 
 function createGame() {
