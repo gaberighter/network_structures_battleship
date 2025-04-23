@@ -7,6 +7,9 @@ const { randomInt } = require('crypto');
 
 var connections = [];
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 class Game{
     
 
@@ -26,7 +29,7 @@ class Game{
 
 // Client opens a lobby, returns a game code for the lobby
 app.post('/startgame', (req, res) => {
-    res.sendFile('../client/gamepage.html', {root: __dirname});
+    res.sendFile('gamepage.html', {root: __dirname});
     console.log("Host connected, waiting for second player");
     let game = new Game();
     game.host = req.body.hostName;
@@ -36,7 +39,7 @@ app.post('/startgame', (req, res) => {
 
 // Guest client joins lobby with game code
 app.post('/login', (req, res) => {
-    let filePath = path.join(__dirname, '../client/gamepage.html')
+    let filePath = path.join(__dirname, 'gamepage.html')
     res.sendFile(filePath);
     console.log("Guest connected, starting game...");
 
@@ -52,7 +55,7 @@ app.post('/login', (req, res) => {
 
 // Guest client connects to the website
 app.get('/', (req, res) => {
-    let filePath = path.join(__dirname, '../client/login.html');
+    let filePath = path.join(__dirname, 'public', 'login.html');
     res.sendFile(filePath);
     console.log("User connected to server");
 })
