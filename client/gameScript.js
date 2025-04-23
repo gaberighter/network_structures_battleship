@@ -26,19 +26,59 @@ function initSetupControls() {
 }
 
 function initShips() {
-    const shipBox = document.getElementById('ship-box')
-    for (let i = 0; i < shipNames.length; i++) {
-        const shipContainer = document.createElement("div")
-        const name = `${shipNames[i]}-container`
-        shipContainer.setAttribute("id", name)
-        shipContainer.setAttribute("class", "ship-container")
-        const ship = document.createElement("img")
-        const imgSrc = `images/${shipNames[i]}.png`
-        ship.setAttribute("src", imgSrc)
-        ship.setAttribute("class", "ship-img")
-        shipContainer.appendChild(ship)
-        shipBox.appendChild(shipContainer)
+    const shipBox = document.getElementById('ship-box');
+
+    const input_form = document.createElement("form")
+    input_form.setAttribute("id", "ship-form")
+
+    for(let i = 0; i < shipNames.length; i++) {
+
+        const locationInput = document.createElement("input")
+        locationInput.setAttribute("type", "text")
+        locationInput.setAttribute("id", shipNames[i])
+        locationInput.setAttribute("name", shipNames[i])
+
+        const locationLabel = document.createElement("label")
+        locationLabel.setAttribute("for", shipNames[i])
+        locationLabel.innerHTML = shipNames[i]
+
+        const horizontal = document.createElement("input")
+        horizontal.setAttribute("type", "radio")
+        horizontal.setAttribute("name", shipNames[i] + "-orientation")
+        horizontal.setAttribute("id", shipNames[i] + "-horizontal")
+        horizontal.setAttribute("value", "horizontal")
+
+        const horizontalLabel = document.createElement("label")
+        horizontalLabel.setAttribute("for", shipNames[i] + "-horizontal")
+        horizontalLabel.innerHTML = "Horizontal"
+
+        const vertical = document.createElement("input")
+        vertical.setAttribute("type", "radio")
+        vertical.setAttribute("name", shipNames[i] + "-orientation")
+        vertical.setAttribute("id", shipNames[i] + "-vertical")
+        vertical.setAttribute("value", "vertical")
+
+        const verticalLabel = document.createElement("label")
+        verticalLabel.setAttribute("for", shipNames[i] + "-vertical")
+        verticalLabel.innerHTML = "Vertical"
+
+        input_form.appendChild(locationLabel)
+        input_form.appendChild(locationInput)
+        input_form.appendChild(horizontal)
+        input_form.appendChild(horizontalLabel)
+        input_form.appendChild(vertical)
+        input_form.appendChild(verticalLabel)
+        input_form.appendChild(document.createElement("br"))
     }
+
+    const submitButton = document.createElement("button")
+    submitButton.setAttribute("type", "submit")
+
+    const buttonText = document.createTextNode("Submit")
+    submitButton.appendChild(buttonText)
+
+    input_form.appendChild(submitButton)
+    shipBox.appendChild(input_form)
 }
 
 function targetCellClick(row, col){
