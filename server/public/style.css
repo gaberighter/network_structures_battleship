@@ -76,7 +76,12 @@
 
 #ready-button {
     width: 100%;
-    height: 100%;
+    height: 50%;
+}
+
+#random-button {
+    width: 100%;
+    height: 50%;
 }
 
 .ship-container {

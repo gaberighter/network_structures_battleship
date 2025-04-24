@@ -14,6 +14,7 @@ function initGamePage(){
 function initSetup() {
     initSetupControls()
     initShips()
+    addRandomFillButton();
 }
 
 function initSetupControls() {
@@ -29,6 +30,7 @@ function initShips() {
     const shipBox = document.getElementById('ship-box');
 
     const input_form = document.createElement("form")
+    input_form.onsubmit = shipFormSubmit
     input_form.setAttribute("id", "ship-form")
 
     for(let i = 0; i < shipNames.length; i++) {
@@ -79,6 +81,198 @@ function initShips() {
 
     input_form.appendChild(submitButton)
     shipBox.appendChild(input_form)
+}
+
+function shipFormSubmit(event) {
+    event.preventDefault();
+    const shipForm = document.getElementById("ship-form");
+    const shipData = new FormData(shipForm);
+    const shipLocations = {};
+
+    for (const shipName of shipNames) {
+        const location = shipData.get(shipName);
+        const orientation = shipData.get(shipName + "-orientation");
+
+        if (!location || !orientation) {
+            alert(`Please fill out both location and orientation for ${shipName}.`);
+            return;
+        }
+
+        shipLocations[shipName] = { location: location, orientation: orientation };
+    }
+
+    console.log(shipLocations);
+    for (const shipName in shipLocations) {
+        const { location, orientation } = shipLocations[shipName];
+        placeShip(shipName, location, orientation);
+    }
+    shipForm.reset();
+    shipForm.remove();
+}
+
+function addRandomFillButton() {
+    const controlBox = document.getElementById('control-box');
+    const randomButton = document.createElement('button');
+    randomButton.setAttribute('id', 'random-button');
+    randomButton.textContent = 'Random Fill';
+    randomButton.onclick = randomFillForm;
+    controlBox.appendChild(randomButton);
+}
+
+function randomFillForm() {
+    const shipForm = document.getElementById('ship-form');
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+    const occupiedCells = new Set();
+
+    for (const shipName of shipNames) {
+        const shipLength = shipDict[0][shipName];
+        let validPlacement = false;
+        let randomRow, randomCol, randomOrientation;
+
+        while (!validPlacement) {
+            randomRow = Math.floor(Math.random() * 10) + 1;
+            randomCol = letters[Math.floor(Math.random() * 10)];
+            randomOrientation = Math.random() > 0.5 ? 'horizontal' : 'vertical';
+
+            const startRow = randomRow - 1;
+            const startCol = randomCol.charCodeAt(0) - 65;
+            const shipCells = [];
+
+            validPlacement = true;
+
+            if (randomOrientation === 'horizontal') {
+                for (let i = 0; i < shipLength; i++) {
+                    const nextCol = startCol + i;
+                    if (nextCol >= 10 || occupiedCells.has(`${startRow}-${nextCol}`)) {
+                        validPlacement = false;
+                        break;
+                    }
+                    shipCells.push(`${startRow}-${nextCol}`);
+                }
+            } else {
+                for (let i = 0; i < shipLength; i++) {
+                    const nextRow = startRow + i;
+                    if (nextRow >= 10 || occupiedCells.has(`${nextRow}-${startCol}`)) {
+                        validPlacement = false;
+                        break;
+                    }
+                    shipCells.push(`${nextRow}-${startCol}`);
+                }
+            }
+
+            if (validPlacement) {
+                shipCells.forEach(cell => occupiedCells.add(cell));
+            }
+        }
+
+        const locationInput = shipForm.querySelector(`#${shipName}`);
+        const horizontalRadio = shipForm.querySelector(`#${shipName}-horizontal`);
+        const verticalRadio = shipForm.querySelector(`#${shipName}-vertical`);
+
+        if (locationInput) locationInput.value = `${randomCol}${randomRow}`;
+        if (randomOrientation === 'horizontal' && horizontalRadio) {
+            horizontalRadio.checked = true;
+        } else if (verticalRadio) {
+            verticalRadio.checked = true;
+        }
+    }
+}
+
+function placeShip(shipName, location, orientation) {
+    const shipLength = shipDict[0][shipName];
+    const row = parseInt(location.substring(1)) - 1; // Extract row number and adjust for 0-based index
+    const col = location.charCodeAt(0) - 65; // Convert column letter to 0-based index
+
+    // Validate starting cell
+    if (row < 0 || row >= 10 || col < 0 || col >= 10) {
+        alert(`Invalid starting location for ${shipName}.`);
+        resetBoardAndForm();
+        clearFormEntries();
+        return;
+    }
+
+    const shipCells = [];
+    let isValidPlacement = true;
+
+    // Check if the ship fits and does not overlap
+    if (orientation === "horizontal") {
+        for (let i = 0; i < shipLength; i++) {
+            const nextCol = col + i;
+            if (nextCol >= 10) {
+                isValidPlacement = false;
+                break;
+            }
+            const cell = document.getElementById(`ship-cell-${row + 1}-${nextCol + 1}`); // Adjust for 1-based grid
+            if (cell && cell.classList.contains('ship-cell-placed')) {
+                isValidPlacement = false;
+                break;
+            }
+            shipCells.push(cell);
+        }
+    } else if (orientation === "vertical") {
+        for (let i = 0; i < shipLength; i++) {
+            const nextRow = row + i;
+            if (nextRow >= 10) {
+                isValidPlacement = false;
+                break;
+            }
+            const cell = document.getElementById(`ship-cell-${nextRow + 1}-${col + 1}`); // Adjust for 1-based grid
+            if (cell && cell.classList.contains('ship-cell-placed')) {
+                isValidPlacement = false;
+                break;
+            }
+            shipCells.push(cell);
+        }
+    }
+
+    if (!isValidPlacement) {
+        alert(`Cannot place ${shipName} at ${location} facing ${orientation}. It either overflows the board or overlaps with another ship.`);
+        resetBoardAndForm();
+        clearFormEntries();
+        return;
+    }
+
+    // Place the ship
+    for (const cell of shipCells) {
+        if (cell) {
+            cell.setAttribute('class', 'ship-cell-placed');
+            cell.style.backgroundColor = 'darkgrey';
+        }
+    }
+
+    console.log(`Placed ${shipName} at ${location} facing ${orientation}`);
+}
+
+function resetBoardAndForm() {
+    // Reset the board
+    const shipCells = document.querySelectorAll('.ship-cell-placed');
+    shipCells.forEach(cell => {
+        cell.setAttribute('class', 'ship-cell');
+        cell.style.backgroundColor = '';
+    });
+
+    // Reset the form
+    const shipForm = document.getElementById('ship-form');
+    if (shipForm) {
+        const shipBox = document.getElementById('ship-box');
+        const formClone = shipForm.cloneNode(true);
+        formClone.onsubmit = shipFormSubmit;
+        shipBox.replaceChild(formClone, shipForm); // Replace the old form with the new one
+    }
+}
+
+function clearFormEntries() {
+    const shipForm = document.getElementById('ship-form');
+    if (shipForm) {
+        const inputs = shipForm.querySelectorAll('input[type="text"], input[type="radio"]');
+        inputs.forEach(input => {
+            if (input.type === 'text') {
+                input.value = '';
+            } else if (input.type === 'radio') {
+                input.checked = false;
+            }
+        });
+    }
 }
 
 function targetCellClick(row, col){
