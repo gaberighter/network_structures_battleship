@@ -1,5 +1,7 @@
 const shipDict = [{"CARRIER": 5, "BATTLESHIP":4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}]
 const shipNames = ["CARRIER", "BATTLESHIP", "CRUISER", "SUBMARINE", "DESTROYER"]
+const shipPositions = []
+const shipsAlive = { "CARRIER": true, "BATTLESHIP": true, "CRUISER": true, "SUBMARINE": true, "DESTROYER": true}
 
 const shipContainer = document.getElementById('player-board')
 
@@ -14,17 +16,46 @@ function initGamePage(){
 function initSetup() {
     initSetupControls()
     initShips()
-    addRandomFillButton();
 }
 
 function initSetupControls() {
     const controlBox = document.getElementById('control-box');
     const readyButton = document.createElement('button');
     readyButton.setAttribute('id', 'ready-button')
+    readyButton.onclick = startGame;
     const buttonText = document.createTextNode("Start Game")
     readyButton.appendChild(buttonText)
     controlBox.appendChild(readyButton)
+    
+    addRandomFillButton();
 }
+
+function startGame() {
+    if (shipPositions.length == shipNames.length) {
+        const route = `/setup`
+        console.log("Starting game with ship positions: ", shipPositions);
+        /*fetch(route,
+            {
+            method: "POST",
+            body: JSON.stringify(shipPositions),
+            headers: {
+                "Content-type": "application/json",
+            },
+            })
+            .then((response) => response.json())
+            .then((json) => console.log(json));*/
+    }
+}
+
+function getNumMoves() {
+    for (ship of shipNames) {
+        if (shipsAlive[ship]) {
+            return shipDict[0][ship]
+        }
+    }
+}
+
+
 
 function initShips() {
     const shipBox = document.getElementById('ship-box');
@@ -203,10 +234,6 @@ function placeShip(shipName, location, orientation) {
                 break;
             }
             const cell = document.getElementById(`ship-cell-${row + 1}-${nextCol + 1}`); // Adjust for 1-based grid
-            if (cell && cell.classList.contains('ship-cell-placed')) {
-                isValidPlacement = false;
-                break;
-            }
             shipCells.push(cell);
         }
     } else if (orientation === "vertical") {
@@ -236,11 +263,11 @@ function placeShip(shipName, location, orientation) {
     for (const cell of shipCells) {
         if (cell) {
             cell.setAttribute('class', 'ship-cell-placed');
-            cell.style.backgroundColor = 'darkgrey';
         }
     }
 
     console.log(`Placed ${shipName} at ${location} facing ${orientation}`);
+    shipPositions.push({ name: shipName, location: location, orientation: orientation });
 }
 
 function resetBoardAndForm() {
