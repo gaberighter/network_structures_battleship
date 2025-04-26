@@ -11,6 +11,7 @@ const { type } = require('os');
 const io = new Server(server);
 const lengths = {"CARRIER": 5, "BATTLESHIP": 4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}; // Lengths of ships
 const orientations = {"horizontal": 0, "vertical": 1}; // Orientation of ships
+var mostRecentShot = null; // Store the most recent shot taken
 
 var connections = [];
 app.use(express.json());
@@ -173,15 +174,21 @@ app.get('/', (req, res) => {
 // Client posts initial position and rotation of their ships
 app.post('/setup', (req, res) => {
     
-    id = req.header['userid'];
-    gameid = req.header['gameid'];
+    let id = req.headers['userid'];
+    let gameid = req.headers['gameid'];
+    let ships = []; // Declare ships outside the if-else block
 
-    if (id === connections.find(g => g.gameid === gameid).hostId) {
-        playerID = 'host';
-    } else {
-        playerID = 'guest';
+    try {
+        if (id === connections.find(g => g.gameid === gameid).hostId) {
+            playerID = 'host';
+            ships = connections.find(g => g.gameid === gameid).hostShips;
+        } else {
+            playerID = 'guest';
+            ships = connections.find(g => g.gameid === gameid).guestShips;
+        }
+    } catch (error) {
+        console.log("Error finding game with ID:", gameid, "or player ID:", id);
     }
-
 
     const request_body = req.body;
     
@@ -212,7 +219,7 @@ app.post('/setup', (req, res) => {
     } else {
         res.status(404).json({ message: "Game not found" });
     }
-})
+});
 
 app.post('/checkturn', (req, res) => {
     const { gameid } = req.body;
