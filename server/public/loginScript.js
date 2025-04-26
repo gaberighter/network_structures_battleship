@@ -40,4 +40,26 @@ function createGame() {
     const userid = document.getElementById("user-id").value;
     console.log("Creating game with code: " + code + " and user id: " + userid)
     sendStartMessage(code, userid, "startgame")
+    function pollGameReady() {
+        console.log("Waiting for game to be ready");
+        fetch("/gameready/:code", {
+            method: "GET",
+            body: JSON.stringify({gameid: code}),
+            headers: {
+                "Content-type": "application/json",
+            },
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            if (json.message === "Game is ready") {
+                console.log("Game is ready");
+                window.location.href = "/gamepage.html";
+            } else {
+                console.log("Game not ready yet");
+                setTimeout(pollGameReady, 1000);
+            }
+        });
+    }
+
+    pollGameReady();
 }

@@ -104,7 +104,8 @@ app.post('/startgame', (req, res) => {
     console.log("Created game with ID:", game.gameid);
     console.log("Current games:", connections.map(g => g.gameid));
     
-    res.status(200).json({ gameid: game.gameid });
+    res.redirect('/waiting.html');
+    
 })
 
 app.get('/gameready', (req, res) => {
