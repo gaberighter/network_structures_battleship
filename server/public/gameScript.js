@@ -92,6 +92,7 @@ function createFireButton() {
     const controlBox = document.getElementById('control-box');
     const fireButton = document.createElement('button');
     fireButton.setAttribute('id', 'fire-button');
+    fireButton.textContent = 'Fire!';
     fireButton.onclick = fire();
     controlBox.appendChild(fireButton);
 }
@@ -159,7 +160,7 @@ function isMyTurn() {
                 console.log("It's my turn!");
                 lastMove["x"] = response.body.shotx;
                 lastMove["y"] = response.body.shoty;
-                const targetCell = document.getElementById(`ship-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                const targetCell = document.getElementById(`ship-cell-${lastMove.shoty + 1}-${lastMove.shotx + 1}`);
                 if (targetCell) {
                     if (targetCell.classList.contains('ship-cell-placed')) {
                         targetCell.style.backgroundColor = "red";
