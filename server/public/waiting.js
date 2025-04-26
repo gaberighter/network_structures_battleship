@@ -17,7 +17,7 @@ function pollServer(){
     .then((response) => {
         if (response.ok) {
             console.log("Game started successfully");
-            window.location.href = "waiting.html";
+            window.location.href = "gamepage.html";
         } else {
             console.error("Error starting game:", response.statusText);
         }
