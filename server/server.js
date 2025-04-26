@@ -222,10 +222,11 @@ app.post('/setup', (req, res) => {
 });
 
 app.post('/checkturn', (req, res) => {
-    const { gameid } = req.body;
-    const game = connections.find(g => g.gameid === gameid);
+    const { gameId, userId } = req.body;
+    const game = connections.find(g => g.gameid === gameId);
+    const yourTurn = game.hostTurn ? (userId === game.hostId) : (userId === game.guestId);
     if (game) {
-        res.status(200).json({ hostTurn: game.hostTurn });
+        res.status(200).json({ yourTurn: yourTurn, userId: userId });
     } else {
         res.status(404).json({ message: "Game not found" });
     }
@@ -234,14 +235,14 @@ app.post('/checkturn', (req, res) => {
 // A player takes a shot
 //TODO Consolidate processing the shot
 app.post('/shoot', (req, res) => {
-    const { gameid, playerID, x, y } = req.body;
-    const game = connections.find(g => g.gameid === gameid);
+    const { gameId, userId, x, y } = req.body;
+    const game = connections.find(g => g.gameid === gameId);
     var allSunk = true;
     if (game) {
         // Process the shot here
-        console.log(`Shot taken by player ${playerID} at (${x}, ${y})`);
-        if (playerID === 'host') {
-            game.hostTurn = !game.hostTurn;
+        console.log(`Shot taken by player ${userId} at (${x}, ${y})`);
+        if (userId === game.hostId) {
+            game.hostTurn = false;
             
             for (let ship of game.guestShips) {
                 
