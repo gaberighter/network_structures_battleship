@@ -77,8 +77,8 @@ class Game{
         this.gameOver = false;
         this.hostId = null;
         this.guestId = null;
-        this.hostShips = [];
-        this.guestShips = [];
+        this.hostShips = this.hostShips || [];
+        this.guestShips = this.guestShips || [];
     }
 }
 
