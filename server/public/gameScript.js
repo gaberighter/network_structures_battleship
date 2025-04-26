@@ -185,7 +185,7 @@ function isMyTurn() {
                 lastMove["x"] = data.shotx;
                 lastMove["y"] = data.shoty;
                 if (lastMove.x !== -1 && lastMove.y !== -1) {
-                    const targetCell = document.getElementById(`ship-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                    const targetCell = document.getElementById(`ship-cell-${lastMove.y}-${lastMove.x}`);
                     if (targetCell) {
                         console.log("Marking target cell: ", targetCell);
                         if (targetCell.classList.contains('ship-cell-placed')) {
