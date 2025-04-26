@@ -108,7 +108,7 @@ app.post('/startgame', (req, res) => {
     
 })
 
-app.get('/gameready', (req, res) => {
+app.post('/gameready', (req, res) => {
     console.log("Checking if game is ready with ID:", req.body.gameid);
     const game = connections.find(g => g.gameid === req.body.gameid);
     if (game.guest !== null) {
