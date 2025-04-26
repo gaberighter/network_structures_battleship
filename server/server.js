@@ -250,7 +250,10 @@ app.post('/checkturn', (req, res) => {
     }
     
     console.log("Final turn decision for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
-    return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
+    if(mostRecentShot){
+        return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
+    }
+    return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1});
 });
 
 // A player takes a shot
