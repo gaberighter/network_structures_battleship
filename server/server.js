@@ -232,21 +232,21 @@ app.post('/checkturn', (req, res) => {
         return res.status(404).json({ message: "Game not found" });
     }
     
-    console.log("Game found:", game.gameid);
+    /*console.log("Game found:", game.gameid);
     console.log("Host ID:", game.host, "Guest ID:", game.guest);
     console.log("Current user ID:", userid);
-    console.log("Host turn status:", game.hostTurn);
+    console.log("Host turn status:", game.hostTurn);*/
     let yourTurn = false;
     
     // Compare as strings to avoid type mismatches
     if (String(userid) === String(game.host)) {
-        console.log("User is host");
+        //console.log("User is host");
         yourTurn = game.hostTurn;
     } else if (String(userid) === String(game.guest)) {
-        console.log("User is guest");
+        //console.log("User is guest");
         yourTurn = !game.hostTurn;
     } else {
-        console.log("User is neither host nor guest");
+        //console.log("User is neither host nor guest");
     }
     
     console.log("Final turn decision for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
