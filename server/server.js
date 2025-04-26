@@ -83,6 +83,8 @@ class Game{
 }
 
 function checkForHit(ship, x, y){
+    x = parseInt(x);
+    y = parseInt(y);
     if(ship.rotation == 0){ // horizontal
         if(x >= ship.x && x < ship.x + ship.length && y == ship.y){
             return true;
