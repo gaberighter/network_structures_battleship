@@ -156,23 +156,26 @@ function isMyTurn() {
             },
         })
         .then((response) => response.json())
-        .then((response) => {
-            if (response.body.yourTurn == true) {
+        .then((data) => {
+            if (data.yourTurn === true) {
                 console.log("It's my turn!");
-                lastMove["x"] = response.body.shotx;
-                lastMove["y"] = response.body.shoty;
-                const targetCell = document.getElementById(`ship-cell-${lastMove.shoty + 1}-${lastMove.shotx + 1}`);
+                lastMove["x"] = data.shotx;
+                lastMove["y"] = data.shoty;
+                const targetCell = document.getElementById(`ship-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
                 if (targetCell) {
                     if (targetCell.classList.contains('ship-cell-placed')) {
                         targetCell.style.backgroundColor = "red";
                     }
                     else {
-                        ship.style.backgroundColor = "white";
+                        targetCell.style.backgroundColor = "white";
                     }
                 }
             } else {
                 console.log("Not my turn yet.");
             }
+        })
+        .catch((error) => {
+            console.error("Error checking turn:", error);
         });
 }
 
