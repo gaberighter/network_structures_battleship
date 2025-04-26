@@ -157,7 +157,7 @@ function isMyTurn() {
         })
         .then((response) => response.json())
         .then((response) => {
-            if (response.body && response.body.yourTurn) {
+            if (response.body.yourTurn == true) {
                 console.log("It's my turn!");
                 lastMove["x"] = response.body.shotx;
                 lastMove["y"] = response.body.shoty;
