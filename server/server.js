@@ -105,7 +105,8 @@ app.post('/startgame', (req, res) => {
     console.log("Current games:", connections.map(g => g.gameid));
     
     let filePath = path.join(__dirname, 'public', 'waiting.html');
-    res.redirect(filePath);
+    res.status(200)
+        .sendFile(filePath);
     
 })
 
@@ -138,7 +139,8 @@ app.post('/login', (req, res) => {
 
 
             // Send success response but don't attempt to send another response later
-            res.redirect(path.join(__dirname, 'public', 'gamepage.html'));
+            res.status(200)
+                .sendFile(path.join(__dirname, 'public', 'gamepage.html'));
 
             
         } else {
