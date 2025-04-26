@@ -119,7 +119,7 @@ function fire() {
 
     const shotCell = document.getElementById(`target-cell-${row + 1}-${col + 1}`);
     if (shotCell) {
-        shotCell.style.backgroundColor = white;
+        shotCell.style.backgroundColor = "white";
     }
 
     sendTurn(move);
