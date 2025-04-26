@@ -110,25 +110,29 @@ function createCoordinateInput() {
 }
 
 function fire() {
-    const coordinateInput = document.getElementById('coordinate-input');
-    const coordinate = coordinateInput.value.toUpperCase();
-    const row = parseInt(coordinate.substring(1)) - 1; // Extract row number and adjust for 0-based index
-    const col = coordinate.charCodeAt(0) - 65; // Convert column letter to 0-based index
+    if (myTurn == true) {
+        const coordinateInput = document.getElementById('coordinate-input');
+        const coordinate = coordinateInput.value.toUpperCase();
+        const row = parseInt(coordinate.substring(1)) - 1; // Extract row number and adjust for 0-based index
+        const col = coordinate.charCodeAt(0) - 65; // Convert column letter to 0-based index
 
-    console.log("Firing at: ", coordinate);
+        console.log("Firing at: ", coordinate);
 
-    const move = { x: col, y: row };
+        const move = { x: col, y: row };
 
-    const shotCell = document.getElementById(`target-cell-${row + 1}-${col + 1}`);
-    if (shotCell) {
-        shotCell.style.backgroundColor = "white";
+        const shotCell = document.getElementById(`target-cell-${row + 1}-${col + 1}`);
+        if (shotCell) {
+            shotCell.style.backgroundColor = "white";
+        }
+
+        sendTurn(move);
     }
-
-    sendTurn(move);
+    else {
+        alert("Not your turn yet!");
+    }
 }
 
 function sendTurn(move) {
-    if (myTurn == true) {
     console.log("Sending turn: ", move.x + ", " + move.y);
     const route = '/shoot';
     fetch(route,
@@ -144,10 +148,6 @@ function sendTurn(move) {
                 "Content-type": "application/json",
             },
         })
-    }
-    else {
-        alert("Not your turn yet!");
-    }
 }
 
 
