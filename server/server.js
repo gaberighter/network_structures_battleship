@@ -199,7 +199,7 @@ app.post('/setup', (req, res) => {
         var length = lengths[name];
         var orientation = orientations[obj.orientation]; // 0 = horizontal, 1 = vertical
         var x = obj.location[0].charCodeAt(0) - 'A'.charCodeAt(0);
-        var y = obj.location[1] - 1;
+        var y = obj.location[1];
         console.log("Adding", name, "at", "x:", x, "y:", y);
         ships.push(new Ship(name, length, orientation, x, y));
     }
@@ -295,11 +295,12 @@ app.post('/shoot', (req, res) => {
             for (let ship of game.hostShips) {
                 
                 if (checkForHit(ship, x, y)) {
+                    hit = true;
                     console.log("Hit!");
                     ship.hits++;
                     if (ship.hits >= ship.length) {
                         ship.sunk = true;
-                        console.log(`${ship.name} has been sunk!`);
+                        console.log(`Host's ${ship.name} has been sunk!`);
                     }
                 }
             }
