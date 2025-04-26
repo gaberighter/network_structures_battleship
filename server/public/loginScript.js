@@ -27,6 +27,7 @@ function sendStartMessage(code, userid, state) {
         .then((response) => {
             if (response.ok) {
                 localStorage.setItem("gameId", code);
+                localStorage.setItem("userId", userid);
                 console.log("Game started successfully");
                 window.location.href = "waiting.html";
             } else {
