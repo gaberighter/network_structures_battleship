@@ -225,7 +225,11 @@ app.post('/setup', (req, res) => {
 app.post('/checkturn', (req, res) => {
     const { gameid, userid } = req.body;
     const game = connections.find(g => g.gameid === gameid);
-    const yourTurn = game.hostTurn ? (userid === game.hostId) : (userid === game.guestId);
+    if (userid === game.hostId){
+        yourTurn = game.hostTurn;
+    }else{
+        yourTurn = !game.hostTurn;
+    }
     console.log("Checking turn for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
     if (game) {
         res.status(200).json({ yourTurn: yourTurn, userId: userid });
