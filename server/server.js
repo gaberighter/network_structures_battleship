@@ -179,7 +179,7 @@ app.post('/setup', (req, res) => {
     let ships = []; // Declare ships outside the if-else block
 
     try {
-        if (id === connections.find(g => g.gameid === gameid).hostId) {
+        if (id === connections.find(g => g.gameid === gameid).host) {
             playerID = 'host';
             ships = connections.find(g => g.gameid === gameid).hostShips;
         } else {
@@ -233,7 +233,7 @@ app.post('/checkturn', (req, res) => {
     }
     
     console.log("Game found:", game.gameid);
-    console.log("Host ID:", game.hostId, "Guest ID:", game.guestId);
+    console.log("Host ID:", game.host, "Guest ID:", game.guest);
     console.log("Current user ID:", userid);
     console.log("Host turn status:", game.hostTurn);
     
@@ -241,7 +241,7 @@ app.post('/checkturn', (req, res) => {
     let yourTurn = false;
     
     // Compare as strings to avoid type mismatches
-    if (String(userid) === String(game.hostId)) {
+    if (String(userid) === String(game.host)) {
         console.log("User is host");
         yourTurn = game.hostTurn;
     } else if (String(userid) === String(game.guestId)) {
@@ -264,7 +264,7 @@ app.post('/shoot', (req, res) => {
     if (game) {
         // Process the shot here
         console.log(`Shot taken by player ${userId} at (${x}, ${y})`);
-        if (userId === game.hostId) {
+        if (userId === game.host) {
             game.hostTurn = false;
             
             for (let ship of game.guestShips) {
