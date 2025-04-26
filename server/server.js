@@ -199,7 +199,7 @@ app.post('/setup', (req, res) => {
         var length = lengths[name];
         var orientation = orientations[obj.orientation]; // 0 = horizontal, 1 = vertical
         var x = obj.location[0].charCodeAt(0) - 'A'.charCodeAt(0);
-        var y = obj.location[1] - 1;
+        var y = obj.location[1];
         console.log("Adding", name, "at", "x:", x, "y:", y);
         ships.push(new Ship(name, length, orientation, x, y));
     }
