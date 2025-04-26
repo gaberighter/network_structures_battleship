@@ -107,6 +107,16 @@ app.post('/startgame', (req, res) => {
     res.status(200).json({ gameid: game.gameid });
 })
 
+app.get('/gameready', (req, res) => {
+    console.log("Checking if game is ready with ID:", req.body.gameid);
+    const game = connections.find(g => g.gameid === req.body.gameid);
+    if (game.guest !== null) {
+        res.status(200).json({ message: "Game is ready", gameid: game.gameid });
+    } else {
+        res.status(404).json({ message: "Game not ready yet" });
+    }
+});
+
 // Guest client joins lobby with game code
 app.post('/login', (req, res) => {
     let filePath = path.join(__dirname, 'public', 'gamepage.html');
@@ -123,13 +133,12 @@ app.post('/login', (req, res) => {
         if (game.guest === null) {
             game.guest = id || req.body.id;
             console.log("Guest joined successfully:", game.guest);
-            
+
+
             // Send success response but don't attempt to send another response later
-            return res.status(200).json({ 
-                message: "Guest joined the game", 
-                gameid: game.gameid,
-                playersReady: !!(game.host && game.guest)
-            });
+            res.redirect('/gamepage.html');
+
+            
         } else {
             console.log("Game is already full");
             res.status(403).json({ message: "Game is already full" });
