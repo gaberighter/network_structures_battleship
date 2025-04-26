@@ -96,11 +96,15 @@ function getMoves(numMoves) {
         moves.pop();
     }
 
+    const controlBox = document.getElementById('control-box');
     const movesIndicator = document.createElement('div');
     movesIndicator.setAttribute('id', 'moves-indicator');
-    
+    movesIndicator.innerHTML = moves
+    controlBox.appendChild(movesIndicator);
+
 
     while (moves.length < numMoves) {
+        movesIndicator.innerHTML = moves
         continue;
     }
 
