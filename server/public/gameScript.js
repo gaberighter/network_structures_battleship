@@ -41,6 +41,8 @@ function startGame() {
             method: "POST",
             body: JSON.stringify(shipPositions),
             headers: {
+                "gameid": localStorage.getItem("gameId"),
+                "userid": localStorage.getItem("userId"),
                 "Content-type": "application/json",
             },
             })
