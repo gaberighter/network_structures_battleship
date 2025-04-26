@@ -77,8 +77,8 @@ class Game{
         this.gameOver = false;
         this.hostId = null;
         this.guestId = null;
-        this.hostShips = this.hostShips || [];
-        this.guestShips = this.guestShips || [];
+        this.hostShips = [];
+        this.guestShips = [];
     }
 }
 
@@ -209,9 +209,9 @@ app.post('/setup', (req, res) => {
         } else if (playerID === 'guest') {
             game.guestShips = ships;
         }
-        
+        console.log(game.hostShips, game.guestShips.length);
         // If both players have set up their ships, notify them
-        if (game.hostShips.length > 0 && game.guestShips.length > 0) {
+        if (game.hostShips != [] && game.guestShips != []) {
             console.log("Both players have set up their ships, game can start");
             res.status(200).json({ message: "Both players have set up their ships, game can start" });
             game.hostTurn = true;
