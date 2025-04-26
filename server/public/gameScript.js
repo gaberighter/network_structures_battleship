@@ -93,7 +93,7 @@ function createFireButton() {
     const fireButton = document.createElement('button');
     fireButton.setAttribute('id', 'fire-button');
     fireButton.textContent = 'Fire!';
-    fireButton.onclick = fire();
+    fireButton.onclick = fire;
     controlBox.appendChild(fireButton);
 }
 
