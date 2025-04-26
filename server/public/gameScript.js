@@ -1,5 +1,7 @@
 //const { response } = require("express")
 
+const { json } = require("express")
+
 const shipDict = [{"CARRIER": 5, "BATTLESHIP":4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}]
 const shipNames = ["CARRIER", "BATTLESHIP", "CRUISER", "SUBMARINE", "DESTROYER"]
 const shipPositions = []
@@ -105,7 +107,7 @@ function createCoordinateInput() {
     coordinateInput.setAttribute('type', 'text');
     coordinateInput.setAttribute('id', 'coordinate-input');
     coordinateInput.setAttribute('placeholder', 'Enter coordinates (e.g., A1)');
-    coordinateInput.setAttribute('maxlength', '2');
+    coordinateInput.setAttribute('maxlength', '3');
     controlBox.appendChild(coordinateInput);
 }
 
@@ -119,11 +121,6 @@ function fire() {
         console.log("Firing at: ", coordinate);
 
         const move = { x: col, y: row };
-
-        const shotCell = document.getElementById(`target-cell-${row + 1}-${col + 1}`);
-        if (shotCell) {
-            shotCell.style.backgroundColor = "white";
-        }
 
         sendTurn(move);
     }
@@ -147,6 +144,22 @@ function sendTurn(move) {
             headers: {
                 "Content-type": "application/json",
             },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.hit === true) {
+                console.log("Hit!");
+                const targetCell = document.getElementById(`target-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                if (targetCell) {
+                    targetCell.style.backgroundColor = "red";
+                }
+            } else {
+                console.log("Miss!");
+                const targetCell = document.getElementById(`target-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                if (targetCell) {
+                    targetCell.style.backgroundColor = "white";
+                }
+            }
         })
 }
 
