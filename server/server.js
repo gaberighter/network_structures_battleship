@@ -204,6 +204,7 @@ app.post('/setup', (req, res) => {
 
     const game = connections.find(g => g.gameid === gameid);
     if (game) {
+        console.log("Game found:", game.gameid);
         if (playerID === 'host') {
             game.hostShips = ships;
         } else if (playerID === 'guest') {
