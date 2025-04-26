@@ -113,6 +113,11 @@ function fire() {
 
     const move = { x: col, y: row };
 
+    const shotCell = document.getElementById(`target-cell-${row + 1}-${col + 1}`);
+    if (shotCell) {
+        shotCell.style.backgroundColor = white;
+    }
+
     sendTurn(move);
 }
 
@@ -135,6 +140,7 @@ function sendTurn(move) {
 
 function isMyTurn() {
     const route = '/checkturn'
+    lastMove = { x: -1, y: -1 }
     fetch(route,
         {
             method: "POST",
@@ -150,6 +156,17 @@ function isMyTurn() {
         .then((response) => {
             if (response.body && response.body.yourTurn) {
                 console.log("It's my turn!");
+                lastMove["x"] = response.body.shotx;
+                lastMove["y"] = response.body.shoty;
+                const targetCell = document.getElementById(`ship-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                if (targetCell) {
+                    if (targetCell.classList.contains('ship-cell-placed')) {
+                        targetCell.style.backgroundColor = "red";
+                    }
+                    else {
+                        ship.style.backgroundColor = "white";
+                    }
+                }
             } else {
                 console.log("Not my turn yet.");
             }
