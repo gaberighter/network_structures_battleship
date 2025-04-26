@@ -212,6 +212,7 @@ app.post('/setup', (req, res) => {
         
         // If both players have set up their ships, notify them
         if (game.hostShips.length > 0 && game.guestShips.length > 0) {
+            console.log("Both players have set up their ships, game can start");
             res.status(200).json({ message: "Both players have set up their ships, game can start" });
             game.hostTurn = true;
         } else {
