@@ -290,7 +290,7 @@ app.post('/shoot', (req, res) => {
                 }
             }
             
-        } else if (playerid === 'guest') {
+        } else if (userid === 'guest') {
             game.hostTurn = true;
             for (let ship of game.hostShips) {
                 
@@ -314,7 +314,7 @@ app.post('/shoot', (req, res) => {
 
         if (allSunk) {
             game.gameOver = true;
-            return res.status(200).json({ message: "Game over", winner: playerid });
+            return res.status(200).json({ message: "Game over", winner: userid });
         }
 
         mostRecentShot = new xy(x, y); // Store the most recent shot taken
