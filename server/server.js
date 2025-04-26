@@ -261,14 +261,14 @@ app.post('/checkturn', (req, res) => {
 // A player takes a shot
 //TODO Consolidate processing the shot
 app.post('/shoot', (req, res) => {
-    const { gameId, userId, x, y } = req.body;
-    const game = connections.find(g => g.gameid === gameId);
+    const { gameid, userid, x, y } = req.body;
+    const game = connections.find(g => g.gameid === gameid);
     let hit = false;
     var allSunk = true;
     if (game) {
         // Process the shot here
-        console.log(`Shot taken by player ${userId} at (${x}, ${y})`);
-        if (userId === game.host) {
+        console.log(`Shot taken by player ${userid} at (${x}, ${y})`);
+        if (userid === game.host) {
             game.hostTurn = false;
             
             for (let ship of game.guestShips) {
@@ -290,7 +290,7 @@ app.post('/shoot', (req, res) => {
                 }
             }
             
-        } else if (playerID === 'guest') {
+        } else if (playerid === 'guest') {
             game.hostTurn = true;
             for (let ship of game.hostShips) {
                 
@@ -314,7 +314,7 @@ app.post('/shoot', (req, res) => {
 
         if (allSunk) {
             game.gameOver = true;
-            return res.status(200).json({ message: "Game over", winner: playerID });
+            return res.status(200).json({ message: "Game over", winner: playerid });
         }
 
         mostRecentShot = new xy(x, y); // Store the most recent shot taken
