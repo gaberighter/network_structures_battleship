@@ -161,14 +161,16 @@ function isMyTurn() {
                 console.log("It's my turn!");
                 lastMove["x"] = data.shotx;
                 lastMove["y"] = data.shoty;
-                const targetCell = document.getElementById(`ship-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
-                if (targetCell) {
-                    console.log("Marking target cell: ", targetCell);
-                    if (targetCell.classList.contains('ship-cell-placed')) {
-                        targetCell.style.backgroundColor = "red";
-                    }
-                    else {
-                        targetCell.style.backgroundColor = "white";
+                if (lastMove.x !== -1 && lastMove.y !== -1) {
+                    const targetCell = document.getElementById(`ship-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                    if (targetCell) {
+                        console.log("Marking target cell: ", targetCell);
+                        if (targetCell.classList.contains('ship-cell-placed')) {
+                            targetCell.style.backgroundColor = "red";
+                        }
+                        else {
+                            targetCell.style.backgroundColor = "white";
+                        }
                     }
                 }
             } else {
