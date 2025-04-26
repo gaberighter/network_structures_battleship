@@ -114,8 +114,8 @@ function fire() {
     if (myTurn == true) {
         const coordinateInput = document.getElementById('coordinate-input');
         const coordinate = coordinateInput.value.toUpperCase();
-        const row = parseInt(coordinate.substring(1)) - 1; // Extract row number and adjust for 0-based index
-        const col = coordinate.charCodeAt(0) - 65; // Convert column letter to 0-based index
+        const row = parseInt(coordinate.substring(1)); // Extract row number and adjust for 0-based index
+        const col = coordinate.charCodeAt(0) - 64; // Convert column letter to 0-based index
 
         console.log("Firing at: ", coordinate);
 
@@ -148,13 +148,13 @@ function sendTurn(move) {
         .then((data) => {
             if (data.hit === true) {
                 console.log("Hit!");
-                const targetCell = document.getElementById(`target-cell-${move.y + 1}-${move.x + 1}`);
+                const targetCell = document.getElementById(`target-cell-${move.y}-${move.x}`);
                 if (targetCell) {
                     targetCell.style.backgroundColor = "red";
                 }
             } else {
                 console.log("Miss!");
-                const targetCell = document.getElementById(`target-cell-${move.y + 1}-${move.x + 1}`);
+                const targetCell = document.getElementById(`target-cell-${move.y}-${move.x}`);
                 if (targetCell) {
                     targetCell.style.backgroundColor = "white";
                 }
@@ -185,7 +185,7 @@ function isMyTurn() {
                 lastMove["x"] = data.shotx;
                 lastMove["y"] = data.shoty;
                 if (lastMove.x !== -1 && lastMove.y !== -1) {
-                    const targetCell = document.getElementById(`ship-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                    const targetCell = document.getElementById(`ship-cell-${lastMove.y}-${lastMove.x}`);
                     if (targetCell) {
                         console.log("Marking target cell: ", targetCell);
                         if (targetCell.classList.contains('ship-cell-placed')) {
