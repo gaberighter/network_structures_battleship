@@ -7,6 +7,8 @@ const shipsAlive = { "CARRIER": true, "BATTLESHIP": true, "CRUISER": true, "SUBM
 
 const shipContainer = document.getElementById('player-board')
 
+const moves = []
+
 onload = initGamePage;
 
 function initGamePage(){
@@ -44,11 +46,106 @@ function startGame() {
                 "gameid": localStorage.getItem("gameId"),
                 "userid": localStorage.getItem("userId"),
                 "Content-type": "application/json",
-            },
+            }
             })
             .then((response) => response.json())
-            .then((json) => console.log(json));
+            .then((response) => {
+                if (response.ok) {
+                    console.log("Game started successfully");
+                    const startButton = document.getElementById('ready-button');
+                    startButton.style.backgroundColor = "green";
+                    startButton.innerHTML = "You're ready!";
+                    playGame();
+                } else {
+                    console.error("Error starting game:", response.statusText);
+                }
+            });
     }
+}
+
+
+function playGame() {
+    console.log("Playing game");
+
+    //remove the buttons for starting the game and random fill
+    const controlBox = document.getElementById('control-box');
+    const readyButton = document.getElementById('ready-button');
+    const randomButton = document.getElementById('random-button');
+    if (readyButton) {
+        controlBox.removeChild(readyButton);
+    }
+    if (randomButton) {
+        controlBox.removeChild(randomButton);
+    }
+
+    // create a Fire button
+    createFireButton();
+
+    setInterval(isMyTurn, 1000);
+    getMoves(getNumMoves());
+}
+
+function getMoves(numMoves) {
+    // clear moves
+    while  (length(moves) > 0) {
+        moves.pop();
+    }
+
+    while (moves.length < numMoves) {
+        continue;
+    }
+
+    sendTurn(moves);
+}
+
+function createFireButton() {
+    const controlBox = document.getElementById('control-box');
+    const fireButton = document.createElement('button');
+    fireButton.setAttribute('id', 'fire-button');
+    fireButton.onclick = sendTurn.bind(null, moves);
+    const buttonText = document.createTextNode("Fire")
+    fireButton.appendChild(buttonText)
+    controlBox.appendChild(fireButton)
+}
+
+function sendTurn(moves) {
+    const route = '/shoot'
+    fetch(route,
+        {
+            method: "POST",
+            body: JSON.stringify({
+                gameid: localStorage.getItem("gameId"),
+                userid: localStorage.getItem("userId"),
+                moves: moves,
+            }),
+            headers: {
+                "Content-type": "application/json",
+            },
+        })
+}
+
+
+function isMyTurn() {
+    const route = '/checkturn'
+    fetch(route,
+        {
+            method: "POST",
+            body: JSON.stringify({
+                gameid: localStorage.getItem("gameId"),
+                userid: localStorage.getItem("userId"),
+            }),
+            headers: {
+                "Content-type": "application/json",
+            },
+        })
+        .then((response) => response.json())
+        .then((response) => {
+            if (response.body.yourTurn) {
+                console.log("It's my turn!");
+            } else {
+                console.log("Not my turn yet.");
+            }
+        });
 }
 
 function getNumMoves() {
@@ -308,6 +405,7 @@ function clearFormEntries() {
 
 function targetCellClick(row, col){
     console.log(`Target cell clicked: Row ${row}, Column ${col}`);
+    moves.push({ row: row, col: col });
 }
 
 function createTargetBoard(){
