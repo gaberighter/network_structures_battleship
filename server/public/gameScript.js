@@ -113,6 +113,8 @@ function fire() {
     const row = parseInt(coordinate.substring(1)) - 1; // Extract row number and adjust for 0-based index
     const col = coordinate.charCodeAt(0) - 65; // Convert column letter to 0-based index
 
+    console.log("Firing at: ", coordinate);
+
     const move = { x: col, y: row };
 
     const shotCell = document.getElementById(`target-cell-${row + 1}-${col + 1}`);
