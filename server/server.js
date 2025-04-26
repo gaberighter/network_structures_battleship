@@ -295,11 +295,12 @@ app.post('/shoot', (req, res) => {
             for (let ship of game.hostShips) {
                 
                 if (checkForHit(ship, x, y)) {
+                    hit = true;
                     console.log("Hit!");
                     ship.hits++;
                     if (ship.hits >= ship.length) {
                         ship.sunk = true;
-                        console.log(`${ship.name} has been sunk!`);
+                        console.log(`Host's ${ship.name} has been sunk!`);
                     }
                 }
             }
