@@ -42,8 +42,8 @@ function createGame() {
     sendStartMessage(code, userid, "startgame")
     function pollGameReady() {
         console.log("Waiting for game to be ready");
-        fetch("/gameready/:code", {
-            method: "GET",
+        fetch("/gameready", {
+            method: "POST",
             body: JSON.stringify({gameid: code}),
             headers: {
                 "Content-type": "application/json",
