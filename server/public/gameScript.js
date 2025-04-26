@@ -81,8 +81,9 @@ function playGame() {
     }
 
     // create a Fire button and coordinate input
-    createFireButton();
+    console.log("Creating fire button and coordinate input");
     createCoordinateInput();
+    createFireButton();
 
     setInterval(isMyTurn, 1000);
 }
