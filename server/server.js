@@ -204,7 +204,6 @@ app.post('/setup', (req, res) => {
 
     const game = connections.find(g => g.gameid === gameid);
     if (game) {
-        console.log("Game found:", game.gameid);
         if (playerID === 'host') {
             game.hostShips = ships;
         } else if (playerID === 'guest') {
@@ -223,11 +222,12 @@ app.post('/setup', (req, res) => {
 });
 
 app.post('/checkturn', (req, res) => {
-    const { gameId, userId } = req.body;
-    const game = connections.find(g => g.gameid === gameId);
-    const yourTurn = game.hostTurn ? (userId === game.hostId) : (userId === game.guestId);
+    const { gameid, userid } = req.body;
+    const game = connections.find(g => g.gameid === gameid);
+    const yourTurn = game.hostTurn ? (userid === game.hostId) : (userid === game.guestId);
+    console.log("Checking turn for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
     if (game) {
-        res.status(200).json({ yourTurn: yourTurn, userId: userId });
+        res.status(200).json({ yourTurn: yourTurn, userId: userid });
     } else {
         res.status(404).json({ message: "Game not found" });
     }
