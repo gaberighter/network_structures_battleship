@@ -1,3 +1,5 @@
+const { response } = require("express")
+
 const shipDict = [{"CARRIER": 5, "BATTLESHIP":4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}]
 const shipNames = ["CARRIER", "BATTLESHIP", "CRUISER", "SUBMARINE", "DESTROYER"]
 const shipPositions = []
@@ -34,7 +36,7 @@ function startGame() {
     if (shipPositions.length == shipNames.length) {
         const route = `/setup`
         console.log("Starting game with ship positions: ", shipPositions);
-        /*fetch(route,
+        fetch(route,
             {
             method: "POST",
             body: JSON.stringify(shipPositions),
@@ -43,7 +45,7 @@ function startGame() {
             },
             })
             .then((response) => response.json())
-            .then((json) => console.log(json));*/
+            .then((json) => console.log(json));
     }
 }
 

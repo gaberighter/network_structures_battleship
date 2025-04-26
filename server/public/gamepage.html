@@ -12,5 +12,36 @@
         <div id="player-board"></div>
         <div id="ship-box"></div>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Establish a Socket.IO connection
+      const socket = io();
+      
+      // Extract game ID and player type from URL or local storage
+      const urlParams = new URLSearchParams(window.location.search);
+      const gameid = urlParams.get('gameid') || localStorage.getItem('gameid');
+      const playerType = urlParams.get('playerType') || localStorage.getItem('playerType'); // 'host' or 'guest'
+      
+      // Join the game room
+      if (gameid && playerType) {
+        socket.emit('join-game', { gameid, playerType });
+      }
+      
+      // Listen for game-ready event
+      socket.on('game-ready', (data) => {
+        console.log(data.message);
+        // Show game start UI elements
+        document.getElementById('gameStatus').textContent = data.message;
+        document.getElementById('startGameBtn').disabled = false;
+      });
+      
+      // Listen for ships-ready event
+      socket.on('ships-ready', (data) => {
+        console.log(data.message);
+        // Both players have placed ships - game can start
+        document.getElementById('gameStatus').textContent = data.message;
+        // Enable gameplay UI elements
+      });
+    </script>
 </body>
 </html>
