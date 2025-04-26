@@ -290,7 +290,7 @@ app.post('/shoot', (req, res) => {
                 }
             }
             
-        } else if (userid === 'guest') {
+        } else if (userid === game.guest) {
             game.hostTurn = true;
             for (let ship of game.hostShips) {
                 
