@@ -108,7 +108,7 @@ app.post('/startgame', (req, res) => {
 
     // Create a new game with proper initialization
     let game = new Game(gameid);
-    game.host = req.body.hostName;
+    game.host = id;
     game.guest = null; // Explicitly set guest to null
     
     connections.push(game);
