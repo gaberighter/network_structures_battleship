@@ -3,11 +3,8 @@
 const shipDict = [{"CARRIER": 5, "BATTLESHIP":4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}]
 const shipNames = ["CARRIER", "BATTLESHIP", "CRUISER", "SUBMARINE", "DESTROYER"]
 const shipPositions = []
-const shipsAlive = { "CARRIER": true, "BATTLESHIP": true, "CRUISER": true, "SUBMARINE": true, "DESTROYER": true}
 
 const shipContainer = document.getElementById('player-board')
-
-const moves = []
 
 onload = initGamePage;
 
@@ -83,45 +80,43 @@ function playGame() {
         controlBox.removeChild(randomButton);
     }
 
-    // create a Fire button
+    // create a Fire button and coordinate input
     createFireButton();
+    createCoordinateInput();
 
     setInterval(isMyTurn, 1000);
-    getMoves(getNumMoves());
-}
-
-function getMoves(numMoves) {
-    // clear moves
-    while  (length(moves) > 0) {
-        moves.pop();
-    }
-
-    const controlBox = document.getElementById('control-box');
-    const movesIndicator = document.createElement('div');
-    movesIndicator.setAttribute('id', 'moves-indicator');
-    movesIndicator.innerHTML = moves
-    controlBox.appendChild(movesIndicator);
-
-
-    while (moves.length < numMoves) {
-        movesIndicator.innerHTML = moves
-        continue;
-    }
-
-    sendTurn(moves);
 }
 
 function createFireButton() {
     const controlBox = document.getElementById('control-box');
     const fireButton = document.createElement('button');
     fireButton.setAttribute('id', 'fire-button');
-    fireButton.onclick = sendTurn.bind(null, moves);
-    const buttonText = document.createTextNode("Fire")
-    fireButton.appendChild(buttonText)
-    controlBox.appendChild(fireButton)
+    fireButton.onclick = fire();
+    controlBox.appendChild(fireButton);
 }
 
-function sendTurn(moves) {
+function createCoordinateInput() {
+    const controlBox = document.getElementById('control-box');
+    const coordinateInput = document.createElement('input');
+    coordinateInput.setAttribute('type', 'text');
+    coordinateInput.setAttribute('id', 'coordinate-input');
+    coordinateInput.setAttribute('placeholder', 'Enter coordinates (e.g., A1)');
+    coordinateInput.setAttribute('maxlength', '2');
+    controlBox.appendChild(coordinateInput);
+}
+
+function fire() {
+    const coordinateInput = document.getElementById('coordinate-input');
+    const coordinate = coordinateInput.value.toUpperCase();
+    const row = parseInt(coordinate.substring(1)) - 1; // Extract row number and adjust for 0-based index
+    const col = coordinate.charCodeAt(0) - 65; // Convert column letter to 0-based index
+
+    const move = { x: col, y: row };
+
+    sendTurn(move);
+}
+
+function sendTurn(move) {
     const route = '/shoot'
     fetch(route,
         {
@@ -129,7 +124,7 @@ function sendTurn(moves) {
             body: JSON.stringify({
                 gameid: localStorage.getItem("gameId"),
                 userid: localStorage.getItem("userId"),
-                moves: moves,
+                move: move,
             }),
             headers: {
                 "Content-type": "application/json",
@@ -159,14 +154,6 @@ function isMyTurn() {
                 console.log("Not my turn yet.");
             }
         });
-}
-
-function getNumMoves() {
-    for (ship of shipNames) {
-        if (shipsAlive[ship]) {
-            return shipDict[0][ship]
-        }
-    }
 }
 
 
@@ -418,7 +405,6 @@ function clearFormEntries() {
 
 function targetCellClick(row, col){
     console.log(`Target cell clicked: Row ${row}, Column ${col}`);
-    moves.push({ row: row, col: col });
 }
 
 function createTargetBoard(){
