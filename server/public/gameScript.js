@@ -48,17 +48,22 @@ function startGame() {
                 "Content-type": "application/json",
             }
             })
-            .then((response) => response.json())
             .then((response) => {
                 if (response.ok) {
-                    console.log("Game started successfully");
-                    const startButton = document.getElementById('ready-button');
-                    startButton.style.backgroundColor = "green";
-                    startButton.innerHTML = "You're ready!";
-                    playGame();
+                    return response.json();
                 } else {
-                    console.error("Error starting game:", response.statusText);
+                    throw new Error(response.statusText);
                 }
+            })
+            .then((response) => {
+                console.log("Game started successfully");
+                const startButton = document.getElementById('ready-button');
+                startButton.style.backgroundColor = "green";
+                startButton.innerHTML = "You're ready!";
+                playGame();
+            })
+            .catch((error) => {
+                console.error("Error starting game:", error.message);
             });
     }
 }
@@ -90,6 +95,10 @@ function getMoves(numMoves) {
     while  (length(moves) > 0) {
         moves.pop();
     }
+
+    const movesIndicator = document.createElement('div');
+    movesIndicator.setAttribute('id', 'moves-indicator');
+    
 
     while (moves.length < numMoves) {
         continue;
