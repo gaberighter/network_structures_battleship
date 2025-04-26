@@ -104,7 +104,8 @@ app.post('/startgame', (req, res) => {
     console.log("Created game with ID:", game.gameid);
     console.log("Current games:", connections.map(g => g.gameid));
     
-    res.redirect('/waiting.html');
+    let filePath = path.join(__dirname, 'public', 'waiting.html');
+    res.redirect(filePath);
     
 })
 
@@ -137,7 +138,7 @@ app.post('/login', (req, res) => {
 
 
             // Send success response but don't attempt to send another response later
-            res.redirect('/gamepage.html');
+            res.redirect(path.join(__dirname, 'public', 'gamepage.html'));
 
             
         } else {
