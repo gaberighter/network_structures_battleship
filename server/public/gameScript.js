@@ -148,13 +148,13 @@ function sendTurn(move) {
         .then((data) => {
             if (data.hit === true) {
                 console.log("Hit!");
-                const targetCell = document.getElementById(`target-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                const targetCell = document.getElementById(`target-cell-${move.y + 1}-${move.x + 1}`);
                 if (targetCell) {
                     targetCell.style.backgroundColor = "red";
                 }
             } else {
                 console.log("Miss!");
-                const targetCell = document.getElementById(`target-cell-${lastMove.y + 1}-${lastMove.x + 1}`);
+                const targetCell = document.getElementById(`target-cell-${move.y + 1}-${move.x + 1}`);
                 if (targetCell) {
                     targetCell.style.backgroundColor = "white";
                 }
