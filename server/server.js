@@ -163,7 +163,8 @@ app.get('/', (req, res) => {
 // Client posts initial position and rotation of their ships
 app.post('/setup', (req, res) => {
     
-    const { gameid, playerID, ships } = req.body;
+    const { gameid, playerID, shipPositions } = req.body;
+    console.log(shipPositions);
     const game = connections.find(g => g.gameid === gameid);
     if (game) {
         if (playerID === 'host') {
@@ -174,7 +175,6 @@ app.post('/setup', (req, res) => {
         
         // If both players have set up their ships, notify them
         if (game.hostShips && game.guestShips) {
-            io.to(gameid).emit('ships-ready', { message: 'Both players have set up their ships. Game is starting!' });
             res.status(200).json({ message: "Both players have set up their ships, game can start" });
         } else {
             res.status(200).json({ message: "Ships set up successfully" });
