@@ -6,6 +6,8 @@ const shipPositions = []
 
 const shipContainer = document.getElementById('player-board')
 
+const myTurn = false
+
 onload = initGamePage;
 
 function initGamePage(){
@@ -126,6 +128,7 @@ function fire() {
 }
 
 function sendTurn(move) {
+    if (myTurn == true) {
     console.log("Sending turn: ", move.x + ", " + move.y);
     const route = '/shoot';
     fetch(route,
@@ -141,6 +144,10 @@ function sendTurn(move) {
                 "Content-type": "application/json",
             },
         })
+    }
+    else {
+        alert("Not your turn yet!");
+    }
 }
 
 
@@ -161,6 +168,7 @@ function isMyTurn() {
         .then((response) => response.json())
         .then((data) => {
             if (data.yourTurn === true) {
+                myTurn = true;
                 console.log("It's my turn!");
                 lastMove["x"] = data.shotx;
                 lastMove["y"] = data.shoty;
@@ -177,6 +185,7 @@ function isMyTurn() {
                     }
                 }
             } else {
+                myTurn = false;
                 console.log("Not my turn yet.");
             }
         })
