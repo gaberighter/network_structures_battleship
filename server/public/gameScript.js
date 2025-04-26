@@ -6,7 +6,7 @@ const shipPositions = []
 
 const shipContainer = document.getElementById('player-board')
 
-const myTurn = false
+var myTurn = false
 
 onload = initGamePage;
 
