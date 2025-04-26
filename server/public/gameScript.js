@@ -124,6 +124,7 @@ function fire() {
 }
 
 function sendTurn(move) {
+    console.log("Sending turn: ", move);
     const route = '/shoot'
     fetch(route,
         {
