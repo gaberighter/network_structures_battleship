@@ -226,17 +226,33 @@ app.post('/setup', (req, res) => {
 app.post('/checkturn', (req, res) => {
     const { gameid, userid } = req.body;
     const game = connections.find(g => g.gameid === gameid);
-    if (userid === game.hostId){
+    
+    if (!game) {
+        console.log("Game not found with ID:", gameid);
+        return res.status(404).json({ message: "Game not found" });
+    }
+    
+    console.log("Game found:", game.gameid);
+    console.log("Host ID:", game.hostId, "Guest ID:", game.guestId);
+    console.log("Current user ID:", userid);
+    console.log("Host turn status:", game.hostTurn);
+    
+    // Properly declare the variable
+    let yourTurn = false;
+    
+    // Compare as strings to avoid type mismatches
+    if (String(userid) === String(game.hostId)) {
+        console.log("User is host");
         yourTurn = game.hostTurn;
-    }else{
+    } else if (String(userid) === String(game.guestId)) {
+        console.log("User is guest");
         yourTurn = !game.hostTurn;
-    }
-    console.log("Checking turn for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
-    if (game) {
-        res.status(200).json({ yourTurn: yourTurn, userId: userid });
     } else {
-        res.status(404).json({ message: "Game not found" });
+        console.log("User is neither host nor guest");
     }
+    
+    console.log("Final turn decision for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
+    return res.status(200).json({ yourTurn: yourTurn, userId: userid });
 });
 
 // A player takes a shot
