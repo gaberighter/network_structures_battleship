@@ -114,8 +114,8 @@ function fire() {
     if (myTurn == true) {
         const coordinateInput = document.getElementById('coordinate-input');
         const coordinate = coordinateInput.value.toUpperCase();
-        const row = parseInt(coordinate.substring(1)) - 1; // Extract row number and adjust for 0-based index
-        const col = coordinate.charCodeAt(0) - 65; // Convert column letter to 0-based index
+        const row = parseInt(coordinate.substring(1)); // Extract row number and adjust for 0-based index
+        const col = coordinate.charCodeAt(0) - 64; // Convert column letter to 0-based index
 
         console.log("Firing at: ", coordinate);
 
