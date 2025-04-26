@@ -4,12 +4,47 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const { randomInt } = require('crypto');
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 var connections = [];
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+io.on('connection', (socket) => {
+    console.log('a user connected with socket id:', socket.id);
+    
+    // Store socket ID when player joins a game
+    socket.on('join-game', (data) => {
+        const { gameid, playerType } = data;
+        socket.join(gameid); // Join socket.io room for this game
+        
+        const game = connections.find(g => g.gameid === gameid);
+        if (game) {
+            if (playerType === 'host') {
+                game.hostSocketId = socket.id;
+            } else if (playerType === 'guest') {
+                game.guestSocketId = socket.id;
+            }
+            
+            // If both players are now connected with sockets
+            if (game.hostSocketId && game.guestSocketId) {
+                io.to(gameid).emit('game-ready', { message: 'Both players connected! Game can start.' });
+            }
+        } else {
+            console.log("Game not found with ID:", gameid);
+            socket.emit('error', { message: 'Game not found' });
+        }
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+        // Handle player disconnection logic if needed
+    });
+});
 
 class Ship{
     constructor(name, length, rotation, x, y){
@@ -23,19 +58,17 @@ class Ship{
     }
 }
 class Game{
-
-    constructor(hostShips, guestShips){
-        this.gameID = randomInt(100,999).toString();
+    constructor(gameid, hostShips, guestShips){
+        this.gameid = gameid;
         this.hostTurn = true;
         this.host = null;
         this.guest = null;
         this.hostShips = null;
         this.guestShips = null;
         this.gameOver = false;
-        
+        this.hostSocketId = null; // Add socket ID tracking
+        this.guestSocketId = null; // Add socket ID tracking
     }
-
-
 }
 
 function checkForHit(ship, x, y){
@@ -53,27 +86,57 @@ function checkForHit(ship, x, y){
 
 // Client opens a lobby, returns a game code for the lobby
 app.post('/startgame', (req, res) => {
-    res.sendFile('../public/gamepage.html', {root: __dirname});
+    const {id, gameid} = req.body;
+    res.sendFile(path.join(__dirname, 'public', 'gamepage.html'));
     console.log("Host connected, waiting for second player");
-    let game = new Game();
+    
+    if(connections.find(g => g.gameid === gameid)){
+        console.log("Game already exists with ID:", gameid);
+        return res.status(403).json({ message: "Game already exists" });
+    }
+
+    // Create a new game with proper initialization
+    let game = new Game(gameid);
     game.host = req.body.hostName;
+    game.guest = null; // Explicitly set guest to null
+    
     connections.push(game);
-    res.status(200).json({ gameID: game.gameID });
+    console.log("Created game with ID:", game.gameid);
+    console.log("Current games:", connections.map(g => g.gameid));
+    
+    res.status(200).json({ gameid: game.gameid });
 })
 
 // Guest client joins lobby with game code
 app.post('/login', (req, res) => {
-    let filePath = path.join(__dirname, 'public', 'gamepage.html')
+    let filePath = path.join(__dirname, 'public', 'gamepage.html');
     res.sendFile(filePath);
-    console.log("Guest connected, starting game...");
-
-    const { gameID } = req.body;
-    const game = connections.find(g => g.gameID === gameID);
-    if (game && game.guest === null) {
-        game.guest = req.body.guestName;
-        res.status(200).json({ message: "Guest joined the game", gameID: game.gameID });
+    
+    const { gameid, id } = req.body;
+    console.log("Guest attempting to join game:", gameid);
+    console.log("Available games:", connections.map(g => g.gameid));
+    
+    const game = connections.find(g => g.gameid === gameid);
+    
+    if (game) {
+        console.log("Game found:", game.gameid, "Current guest:", game.guest);
+        if (game.guest === null) {
+            game.guest = id || req.body.id;
+            console.log("Guest joined successfully:", game.guest);
+            
+            // Send success response but don't attempt to send another response later
+            return res.status(200).json({ 
+                message: "Guest joined the game", 
+                gameid: game.gameid,
+                playersReady: !!(game.host && game.guest)
+            });
+        } else {
+            console.log("Game is already full");
+            res.status(403).json({ message: "Game is already full" });
+        }
     } else {
-        res.status(404).json({ message: "Game not found or game full" });
+        console.log("Game not found with ID:", gameid);
+        res.status(404).json({ message: "Game not found" });
     }
 })
 
@@ -87,15 +150,18 @@ app.get('/', (req, res) => {
 // Client posts initial position and rotation of their ships
 app.post('/setup', (req, res) => {
     
-    const { gameID, playerID, ships } = req.body;
-    const game = connections.find(g => g.gameID === gameID);
+    const { gameid, playerID, ships } = req.body;
+    const game = connections.find(g => g.gameid === gameid);
     if (game) {
         if (playerID === 'host') {
             game.hostShips = ships;
         } else if (playerID === 'guest') {
             game.guestShips = ships;
         }
+        
+        // If both players have set up their ships, notify them
         if (game.hostShips && game.guestShips) {
+            io.to(gameid).emit('ships-ready', { message: 'Both players have set up their ships. Game is starting!' });
             res.status(200).json({ message: "Both players have set up their ships, game can start" });
         } else {
             res.status(200).json({ message: "Ships set up successfully" });
@@ -108,8 +174,8 @@ app.post('/setup', (req, res) => {
 // A player takes a shot
 //TODO Consolidate processing the shot
 app.post('/shoot', (req, res) => {
-    const { gameID, playerID, x, y } = req.body;
-    const game = connections.find(g => g.gameID === gameID);
+    const { gameid, playerID, x, y } = req.body;
+    const game = connections.find(g => g.gameid === gameid);
     var allSunk = true;
     if (game) {
         // Process the shot here
@@ -170,6 +236,7 @@ app.post('/shoot', (req, res) => {
 
 })
 
-app.listen(3000, () => {
+// Use 'server' instead of 'app' for Socket.IO to work
+server.listen(3000, () => {
     console.log("Server running on port 3000");
-})
+});
