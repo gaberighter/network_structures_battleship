@@ -52,6 +52,9 @@ function startGame() {
             .then((response) => {
                 if (response.ok) {
                     console.log("Game started successfully");
+                    const startButton = document.getElementById('ready-button');
+                    startButton.style.backgroundColor = "green";
+                    startButton.innerHTML = "You're ready!";
                     playGame();
                 } else {
                     console.error("Error starting game:", response.statusText);
@@ -136,13 +139,11 @@ function isMyTurn() {
             },
         })
         .then((response) => response.json())
-        .then((data) => {
-            if (data.isMyTurn) {
+        .then((response) => {
+            if (response.body.yourTurn) {
                 console.log("It's my turn!");
-                // Enable the target board for clicking
             } else {
                 console.log("Not my turn yet.");
-                // Disable the target board for clicking
             }
         });
 }
