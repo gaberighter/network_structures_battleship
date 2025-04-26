@@ -153,7 +153,7 @@ function isMyTurn() {
         })
         .then((response) => response.json())
         .then((response) => {
-            if (response.body.yourTurn) {
+            if (response.body && response.body.yourTurn) {
                 console.log("It's my turn!");
             } else {
                 console.log("Not my turn yet.");
