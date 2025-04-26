@@ -2,7 +2,7 @@ const { response } = require("express")
 
 const shipDict = [{"CARRIER": 5, "BATTLESHIP":4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}]
 const shipNames = ["CARRIER", "BATTLESHIP", "CRUISER", "SUBMARINE", "DESTROYER"]
-const shipPositions = y
+const shipPositions = []
 const shipsAlive = { "CARRIER": true, "BATTLESHIP": true, "CRUISER": true, "SUBMARINE": true, "DESTROYER": true}
 
 const shipContainer = document.getElementById('player-board')
