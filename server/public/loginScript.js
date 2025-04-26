@@ -11,22 +11,28 @@ function initLoginPage(){
 }
 
 function sendStartMessage(code, userid, state) {
-    const route = `/${state}`
+    const route = `/${state}`;
 
     fetch(route,
         {
            method: "POST",
-           body: JSON.stringify
-           ({
-            id: userid,
-            gameid: code,
+           body: JSON.stringify({
+               id: userid,
+               gameid: code,
            }),
            headers: {
-            "Content-type": "application/json",
+               "Content-type": "application/json",
            },
         })
-        .then((response) => response.json())
-        .then((json) => console.log(json));
+        .then((response) => {
+            if (response.ok) {
+                localStorage.setItem("gameId", code);
+                console.log("Game started successfully");
+                window.location.href = "waiting.html";
+            } else {
+                console.error("Error starting game:", response.statusText);
+            }
+        })
 }
 
 function joinGame() {
@@ -40,26 +46,4 @@ function createGame() {
     const userid = document.getElementById("user-id").value;
     console.log("Creating game with code: " + code + " and user id: " + userid)
     sendStartMessage(code, userid, "startgame")
-    function pollGameReady() {
-        console.log("Waiting for game to be ready");
-        fetch("/gameready", {
-            method: "POST",
-            body: JSON.stringify({gameid: code}),
-            headers: {
-                "Content-type": "application/json",
-            },
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            if (json.message === "Game is ready") {
-                console.log("Game is ready");
-                window.location.href = "/gamepage.html";
-            } else {
-                console.log("Game not ready yet");
-                setTimeout(pollGameReady, 1000);
-            }
-        });
-    }
-
-    pollGameReady();
 }

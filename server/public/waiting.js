@@ -5,7 +5,7 @@ function initWaitingPage(){
 }
 
 function pollServer(){
-    this.fetch("/gameready", {
+    fetch("/gameready", {
         method: "POST",
         body: JSON.stringify({
             gameid: localStorage.getItem("gameId"),
@@ -13,5 +13,13 @@ function pollServer(){
         headers: {
             "Content-type": "application/json",
         },
+    })
+    .then((response) => {
+        if (response.ok) {
+            console.log("Game started successfully");
+            window.location.href = "waiting.html";
+        } else {
+            console.error("Error starting game:", response.statusText);
+        }
     })
 }
