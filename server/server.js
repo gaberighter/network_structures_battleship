@@ -215,6 +215,8 @@ app.post('/setup', (req, res) => {
             res.status(200).json({ message: "Both players have set up their ships, game can start" });
         } else {
             res.status(200).json({ message: "Ships set up successfully" });
+            // Randomly choose either host turn or guest turn to be true
+            game.hostTurn = Math.random() < 0.5;
         }
     } else {
         res.status(404).json({ message: "Game not found" });
