@@ -7,7 +7,11 @@ const { randomInt } = require('crypto');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const { type } = require('os');
 const io = new Server(server);
+const lengths = {"CARRIER": 5, "BATTLESHIP": 4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}; // Lengths of ships
+const orientations = {"horizontal": 0, "vertical": 1}; // Orientation of ships
+var mostRecentShot = null; // Store the most recent shot taken
 
 var connections = [];
 app.use(express.json());
@@ -57,17 +61,24 @@ class Ship{
         this.sunk = false;
     }
 }
+
+class xy{
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+    }
+}
 class Game{
-    constructor(gameid, hostShips, guestShips){
+    constructor(gameid){
         this.gameid = gameid;
         this.hostTurn = true;
         this.host = null;
         this.guest = null;
-        this.hostShips = null;
-        this.guestShips = null;
         this.gameOver = false;
-        this.hostSocketId = null; // Add socket ID tracking
-        this.guestSocketId = null; // Add socket ID tracking
+        this.hostId = null;
+        this.guestId = null;
+        this.hostShips = [];
+        this.guestShips = [];
     }
 }
 
@@ -163,7 +174,34 @@ app.get('/', (req, res) => {
 // Client posts initial position and rotation of their ships
 app.post('/setup', (req, res) => {
     
-    const { gameid, playerID, ships } = req.body;
+    let id = req.headers['userid'];
+    let gameid = req.headers['gameid'];
+    let ships = []; // Declare ships outside the if-else block
+
+    try {
+        if (id === connections.find(g => g.gameid === gameid).hostId) {
+            playerID = 'host';
+            ships = connections.find(g => g.gameid === gameid).hostShips;
+        } else {
+            playerID = 'guest';
+            ships = connections.find(g => g.gameid === gameid).guestShips;
+        }
+    } catch (error) {
+        console.log("Error finding game with ID:", gameid, "or player ID:", id);
+    }
+
+    const request_body = req.body;
+    
+    for (let obj of request_body) {
+        var name = obj.name;
+        var length = lengths[name];
+        var orientation = orientations[obj.orientation]; // 0 = horizontal, 1 = vertical
+        var x = obj.location[0].charCodeAt(0) - 'A'.charCodeAt(0);
+        var y = obj.location[1] - 1;
+        console.log("Adding", name, "at", "x:", x, "y:", y);
+        ships.push(new Ship(name, length, orientation, x, y));
+    }
+
     const game = connections.find(g => g.gameid === gameid);
     if (game) {
         if (playerID === 'host') {
@@ -173,8 +211,7 @@ app.post('/setup', (req, res) => {
         }
         
         // If both players have set up their ships, notify them
-        if (game.hostShips && game.guestShips) {
-            io.to(gameid).emit('ships-ready', { message: 'Both players have set up their ships. Game is starting!' });
+        if (game.hostShips.length > 0 && game.guestShips.length > 0) {
             res.status(200).json({ message: "Both players have set up their ships, game can start" });
         } else {
             res.status(200).json({ message: "Ships set up successfully" });
@@ -182,7 +219,17 @@ app.post('/setup', (req, res) => {
     } else {
         res.status(404).json({ message: "Game not found" });
     }
-})
+});
+
+app.post('/checkturn', (req, res) => {
+    const { gameid } = req.body;
+    const game = connections.find(g => g.gameid === gameid);
+    if (game) {
+        res.status(200).json({ hostTurn: game.hostTurn });
+    } else {
+        res.status(404).json({ message: "Game not found" });
+    }
+});
 
 // A player takes a shot
 //TODO Consolidate processing the shot
@@ -246,8 +293,7 @@ app.post('/shoot', (req, res) => {
     } else {
         res.status(404).json({ message: "Game not found" });
     }
-
-})
+});
 
 // Use 'server' instead of 'app' for Socket.IO to work
 server.listen(3000, () => {
