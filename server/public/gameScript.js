@@ -127,14 +127,15 @@ function fire() {
 
 function sendTurn(move) {
     console.log("Sending turn: ", move.x + ", " + move.y);
-    const route = '/shoot'
+    const route = '/shoot';
     fetch(route,
         {
             method: "POST",
             body: JSON.stringify({
                 gameid: localStorage.getItem("gameId"),
                 userid: localStorage.getItem("userId"),
-                move: move,
+                x: move.x,
+                y: move.y,
             }),
             headers: {
                 "Content-type": "application/json",
