@@ -236,15 +236,13 @@ app.post('/checkturn', (req, res) => {
     console.log("Host ID:", game.host, "Guest ID:", game.guest);
     console.log("Current user ID:", userid);
     console.log("Host turn status:", game.hostTurn);
-    
-    // Properly declare the variable
     let yourTurn = false;
     
     // Compare as strings to avoid type mismatches
     if (String(userid) === String(game.host)) {
         console.log("User is host");
         yourTurn = game.hostTurn;
-    } else if (String(userid) === String(game.guestId)) {
+    } else if (String(userid) === String(game.guest)) {
         console.log("User is guest");
         yourTurn = !game.hostTurn;
     } else {
@@ -252,7 +250,7 @@ app.post('/checkturn', (req, res) => {
     }
     
     console.log("Final turn decision for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
-    return res.status(200).json({ yourTurn: yourTurn, userId: userid });
+    return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
 });
 
 // A player takes a shot
@@ -260,6 +258,7 @@ app.post('/checkturn', (req, res) => {
 app.post('/shoot', (req, res) => {
     const { gameId, userId, x, y } = req.body;
     const game = connections.find(g => g.gameid === gameId);
+    let hit = false;
     var allSunk = true;
     if (game) {
         // Process the shot here
@@ -270,6 +269,7 @@ app.post('/shoot', (req, res) => {
             for (let ship of game.guestShips) {
                 
                 if (checkForHit(ship, x, y)) {
+                    hit = true;
                     console.log("Hit!");
                     ship.hits++;
                     if (ship.hits >= ship.length) {
@@ -312,8 +312,8 @@ app.post('/shoot', (req, res) => {
             return res.status(200).json({ message: "Game over", winner: playerID });
         }
 
-
-        res.status(200).json({ message: "Shot taken", x: x, y: y });
+        mostRecentShot = new xy(x, y); // Store the most recent shot taken
+        res.status(200).json({ message: "Shot taken", hit: hit});
     } else {
         res.status(404).json({ message: "Game not found" });
     }
