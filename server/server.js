@@ -79,22 +79,22 @@ class Game{
 }
 
 function checkForHit(ship, x, y){
-    // Ensure we're working with numbers
-    x = parseInt(x);
-    y = parseInt(y);
+    // Ensure we're working with numbers with proper radix
+    x = parseInt(x, 10);
+    y = parseInt(y, 10);
     
-    const shipx = parseInt(ship.x);
-    const shipy = parseInt(ship.y);
+    const shipx = parseInt(ship.x, 10);
+    const shipy = parseInt(ship.y, 10);
     
     console.log(`Checking hit: Shot at (${x}, ${y}), Ship at (${shipx}, ${shipy}) with length ${ship.length}, rotation ${ship.rotation}`);
     
     if(ship.rotation == 0){ // horizontal
-        const isHit = x >= shipx && x < shipx + parseInt(ship.length) && y == shipy;
-        console.log(`Horizontal ship check: x >= ${shipx} && x < ${shipx + parseInt(ship.length)} && y == ${shipy} => ${isHit}`);
+        const isHit = x >= shipx && x < shipx + parseInt(ship.length, 10) && y == shipy;
+        console.log(`Horizontal ship check: x >= ${shipx} && x < ${shipx + parseInt(ship.length, 10)} && y == ${shipy} => ${isHit}`);
         return isHit;
     } else { // vertical
-        const isHit = x == shipx && y >= shipy && y < shipy + parseInt(ship.length);
-        console.log(`Vertical ship check: x == ${shipx} && y >= ${shipy} && y < ${shipy + parseInt(ship.length)} => ${isHit}`);
+        const isHit = x == shipx && y >= shipy && y < shipy + parseInt(ship.length, 10);
+        console.log(`Vertical ship check: x == ${shipx} && y >= ${shipy} && y < ${shipy + parseInt(ship.length, 10)} => ${isHit}`);
         return isHit;
     }
 }
