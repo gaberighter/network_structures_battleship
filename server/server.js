@@ -284,6 +284,7 @@ app.post('/shoot', (req, res) => {
                     if (ship.hits >= ship.length) {
                         ship.sunk = true;
                         console.log(`Guest's ${ship.name} has been sunk!`);
+                        sunkShip = ship.name; // Store the name of the sunk ship
                     }
                 }
             }
