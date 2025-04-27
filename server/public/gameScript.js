@@ -159,7 +159,7 @@ function sendTurn(move) {
                 alert(`You sunk ${data.sunkShip}!`);
             }
             if (data.gameOver) {
-                window.location.href = "win.html";
+                alert("Game Over! You Win!");
             }
             if (data.hit === true) {
                 console.log("Hit!");
@@ -195,7 +195,7 @@ function isMyTurn() {
         .then((response) => response.json())
         .then((data) => {
             if (data.gameOver == true) {
-                window.location.href = "lose.html";
+                alert("Game over! You lose!");
             }
             if (data.yourTurn === true) {
                 myTurn = true;
