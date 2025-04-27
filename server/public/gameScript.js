@@ -4,8 +4,8 @@
 const shipDict = [{"CARRIER": 5, "BATTLESHIP":4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}]
 const shipNames = ["CARRIER", "BATTLESHIP", "CRUISER", "SUBMARINE", "DESTROYER"]
 const shipPositions = []
-
 const shipContainer = document.getElementById('player-board')
+const shots = []
 
 var myTurn = false
 
@@ -124,7 +124,12 @@ function fire() {
             alert("Invalid coordinates. Please enter a letter (A-J) followed by a number (1-10).");
             return;
         }
+        if (shots.includes(coordinate)) {
+            alert("You have already fired at this location. Please choose a different coordinate.");
+            return;
+        }
 
+        shots.push(coordinate);
         sendTurn(move);
     }
     else {
@@ -150,6 +155,12 @@ function sendTurn(move) {
         })
         .then((response) => response.json())
         .then((data) => {
+            if (data.sunkShip) {
+                alert(`You sunk ${data.sunkShip}!`);
+            }
+            if (data.gameOver) {
+                alert("Game Over! You won!");
+            }
             if (data.hit === true) {
                 console.log("Hit!");
                 const targetCell = document.getElementById(`target-cell-${move.y}-${move.x}`);
@@ -183,6 +194,9 @@ function isMyTurn() {
         })
         .then((response) => response.json())
         .then((data) => {
+            if (data.gameOver == true) {
+                alert("Game Over! You lost!");
+            }
             if (data.yourTurn === true) {
                 myTurn = true;
                 console.log("It's my turn!");
