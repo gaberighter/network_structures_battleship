@@ -83,18 +83,24 @@ class Game{
 }
 
 function checkForHit(ship, x, y){
+    // Ensure we're working with numbers
     x = parseInt(x);
     y = parseInt(y);
+    
+    const shipx = parseInt(ship.x);
+    const shipy = parseInt(ship.y);
+    
+    console.log(`Checking hit: Shot at (${x}, ${y}), Ship at (${shipx}, ${shipy}) with length ${ship.length}, rotation ${ship.rotation}`);
+    
     if(ship.rotation == 0){ // horizontal
-        if(x >= ship.x && x < ship.x + ship.length && y == ship.y){
-            return true;
-        }
-    }else{ // vertical
-        if(x == ship.x && y >= ship.y && y < ship.y + ship.length){
-            return true;
-        }
+        const isHit = x >= shipx && x < shipx + parseInt(ship.length) && y == shipy;
+        console.log(`Horizontal ship check: x >= ${shipx} && x < ${shipx + parseInt(ship.length)} && y == ${shipy} => ${isHit}`);
+        return isHit;
+    } else { // vertical
+        const isHit = x == shipx && y >= shipy && y < shipy + parseInt(ship.length);
+        console.log(`Vertical ship check: x == ${shipx} && y >= ${shipy} && y < ${shipy + parseInt(ship.length)} => ${isHit}`);
+        return isHit;
     }
-    return false;
 }
 
 // Client opens a lobby, returns a game code for the lobby
@@ -251,7 +257,7 @@ app.post('/checkturn', (req, res) => {
         //console.log("User is neither host nor guest");
     }
     
-    console.log("Final turn decision for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
+    //console.log("Final turn decision for user:", userid, "in game:", gameid, "Your turn:", yourTurn);
     if(mostRecentShot){
         return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
     }
