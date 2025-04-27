@@ -258,7 +258,6 @@ app.post('/checkturn', (req, res) => {
         return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
     }
     return res.status(200)
-        .sendFile(path.join(__dirname, 'public', 'lose.html'))
         .json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1, gameOver: game.gameOver });
 });
 
@@ -327,7 +326,6 @@ app.post('/shoot', (req, res) => {
 
         mostRecentShot = new xy(x, y); // Store the most recent shot taken
         res.status(200)
-            .sendFile(path.join(__dirname, 'public', 'win.html'))
             .json({ message: "Shot taken", hit: hit, sunkShip: sunkShip, gameOver: game.gameOver });
 
     } else {
