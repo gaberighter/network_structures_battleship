@@ -86,7 +86,7 @@ function checkForHit(ship, x, y){
     const shipx = parseInt(ship.x, 10);
     const shipy = parseInt(ship.y, 10);
     
-    console.log(`Checking hit: Shot at (${x}, ${y}), Ship at (${shipx}, ${shipy}) with length ${ship.length}, rotation ${ship.rotation}`);
+    //console.log(`Checking hit: Shot at (${x}, ${y}), Ship at (${shipx}, ${shipy}) with length ${ship.length}, rotation ${ship.rotation}`);
     
     if(ship.rotation == 0){ // horizontal
         const isHit = x >= shipx && x < shipx + parseInt(ship.length, 10) && y == shipy;
@@ -258,6 +258,7 @@ app.post('/checkturn', (req, res) => {
         return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
     }
     return res.status(200)
+        .sendFile(path.join(__dirname, 'public', 'lose.html'))
         .json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1, gameOver: game.gameOver });
 });
 
@@ -326,6 +327,7 @@ app.post('/shoot', (req, res) => {
 
         mostRecentShot = new xy(x, y); // Store the most recent shot taken
         res.status(200)
+            .sendFile(path.join(__dirname, 'public', 'win.html'))
             .json({ message: "Shot taken", hit: hit, sunkShip: sunkShip, gameOver: game.gameOver });
 
     } else {
