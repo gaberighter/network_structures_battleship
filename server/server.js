@@ -1,13 +1,9 @@
-const https = require('https');
-const fs = require('fs');
 const express = require('express');
 const app = express();
 const path = require('path');
-const { randomInt } = require('crypto');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const { type } = require('os');
 const io = new Server(server);
 const lengths = {"CARRIER": 5, "BATTLESHIP": 4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}; // Lengths of ships
 const orientations = {"horizontal": 0, "vertical": 1}; // Orientation of ships
@@ -261,7 +257,9 @@ app.post('/checkturn', (req, res) => {
     if(mostRecentShot){
         return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
     }
-    return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1, gameOver: game.gameOver});
+    return res.status(200)
+        .sendFile(path.join(__dirname, 'public', 'gamepage.html'))
+        .json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1, gameOver: game.gameOver });
 });
 
 // A player takes a shot
@@ -322,12 +320,14 @@ app.post('/shoot', (req, res) => {
 
         if (allSunk) {
             game.gameOver = true;
-            Console.log("Game over! Player", userid, "wins!");
-            return res.status(200).json({ message: "Game over", winner: userid });
+            console.log("Game over! Player", userid, "wins!");
         }
 
         mostRecentShot = new xy(x, y); // Store the most recent shot taken
-        res.status(200).json({ message: "Shot taken", hit: hit, sunkShip: sunkShip, gameOver: game.gameOver});
+        res.status(200)
+            .sendFile(path.join(__dirname, 'public', 'win.html'))
+            .json({ message: "Shot taken", hit: hit, sunkShip: sunkShip, gameOver: game.gameOver });
+
     } else {
         res.status(404).json({ message: "Game not found" });
     }
