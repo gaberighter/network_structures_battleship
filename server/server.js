@@ -261,7 +261,7 @@ app.post('/checkturn', (req, res) => {
     if(mostRecentShot){
         return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
     }
-    return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1});
+    return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1, gameOver: game.gameOver});
 });
 
 // A player takes a shot
@@ -271,6 +271,7 @@ app.post('/shoot', (req, res) => {
     const game = connections.find(g => g.gameid === gameid);
     let hit = false;
     var allSunk = true;
+    var sunkShip = null;
     if (game) {
         // Process the shot here
         console.log(`Shot taken by player ${userid} at (${x}, ${y})`);
@@ -321,11 +322,12 @@ app.post('/shoot', (req, res) => {
 
         if (allSunk) {
             game.gameOver = true;
+            Console.log("Game over! Player", userid, "wins!");
             return res.status(200).json({ message: "Game over", winner: userid });
         }
 
         mostRecentShot = new xy(x, y); // Store the most recent shot taken
-        res.status(200).json({ message: "Shot taken", hit: hit});
+        res.status(200).json({ message: "Shot taken", hit: hit, sunkShip: sunkShip, gameOver: game.gameOver});
     } else {
         res.status(404).json({ message: "Game not found" });
     }
