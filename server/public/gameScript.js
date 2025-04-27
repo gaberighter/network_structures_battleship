@@ -120,6 +120,10 @@ function fire() {
         console.log("Firing at: ", coordinate);
 
         const move = { x: col, y: row };
+        if (move.x < 1 || move.x > 10 || move.y < 1 || move.y > 10) {
+            alert("Invalid coordinates. Please enter a letter (A-J) followed by a number (1-10).");
+            return;
+        }
 
         sendTurn(move);
     }
