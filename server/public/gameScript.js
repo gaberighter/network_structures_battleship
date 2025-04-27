@@ -158,8 +158,11 @@ function sendTurn(move) {
             if (data.sunkShip) {
                 alert(`You sunk ${data.sunkShip}!`);
             }
-            if (data.gameOver) {
+            if (data.gameOver && data.sunkShip) {
                 alert("Game Over! You Win!");
+            }
+            else if (data.gameOver) {
+                alert("Game Over! You Lose!");
             }
             if (data.hit === true) {
                 console.log("Hit!");
