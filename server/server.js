@@ -1,13 +1,9 @@
-const https = require('https');
-const fs = require('fs');
 const express = require('express');
 const app = express();
 const path = require('path');
-const { randomInt } = require('crypto');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const { type } = require('os');
 const io = new Server(server);
 const lengths = {"CARRIER": 5, "BATTLESHIP": 4, "CRUISER": 3, "SUBMARINE": 3, "DESTROYER": 2}; // Lengths of ships
 const orientations = {"horizontal": 0, "vertical": 1}; // Orientation of ships
@@ -83,22 +79,22 @@ class Game{
 }
 
 function checkForHit(ship, x, y){
-    // Ensure we're working with numbers
-    x = parseInt(x);
-    y = parseInt(y);
+    // Ensure we're working with numbers with proper radix
+    x = parseInt(x, 10);
+    y = parseInt(y, 10);
     
-    const shipx = parseInt(ship.x);
-    const shipy = parseInt(ship.y);
+    const shipx = parseInt(ship.x, 10);
+    const shipy = parseInt(ship.y, 10);
     
     console.log(`Checking hit: Shot at (${x}, ${y}), Ship at (${shipx}, ${shipy}) with length ${ship.length}, rotation ${ship.rotation}`);
     
     if(ship.rotation == 0){ // horizontal
-        const isHit = x >= shipx && x < shipx + parseInt(ship.length) && y == shipy;
-        console.log(`Horizontal ship check: x >= ${shipx} && x < ${shipx + parseInt(ship.length)} && y == ${shipy} => ${isHit}`);
+        const isHit = x >= shipx && x < shipx + parseInt(ship.length, 10) && y == shipy;
+        console.log(`Horizontal ship check: x >= ${shipx} && x < ${shipx + parseInt(ship.length, 10)} && y == ${shipy} => ${isHit}`);
         return isHit;
     } else { // vertical
-        const isHit = x == shipx && y >= shipy && y < shipy + parseInt(ship.length);
-        console.log(`Vertical ship check: x == ${shipx} && y >= ${shipy} && y < ${shipy + parseInt(ship.length)} => ${isHit}`);
+        const isHit = x == shipx && y >= shipy && y < shipy + parseInt(ship.length, 10);
+        console.log(`Vertical ship check: x == ${shipx} && y >= ${shipy} && y < ${shipy + parseInt(ship.length, 10)} => ${isHit}`);
         return isHit;
     }
 }
@@ -261,7 +257,8 @@ app.post('/checkturn', (req, res) => {
     if(mostRecentShot){
         return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: mostRecentShot.x || -1, shoty: mostRecentShot.y || -1});
     }
-    return res.status(200).json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1, gameOver: game.gameOver});
+    return res.status(200)
+        .json({ yourTurn: yourTurn, userId: userid, shotx: -1, shoty: -1, gameOver: game.gameOver });
 });
 
 // A player takes a shot
@@ -287,6 +284,7 @@ app.post('/shoot', (req, res) => {
                     if (ship.hits >= ship.length) {
                         ship.sunk = true;
                         console.log(`Guest's ${ship.name} has been sunk!`);
+                        sunkShip = ship.name; // Store the name of the sunk ship
                     }
                 }
             }
@@ -308,6 +306,7 @@ app.post('/shoot', (req, res) => {
                     if (ship.hits >= ship.length) {
                         ship.sunk = true;
                         console.log(`Host's ${ship.name} has been sunk!`);
+                        sunkShip = ship.name; // Store the name of the sunk ship
                     }
                 }
             }
@@ -322,12 +321,13 @@ app.post('/shoot', (req, res) => {
 
         if (allSunk) {
             game.gameOver = true;
-            Console.log("Game over! Player", userid, "wins!");
-            return res.status(200).json({ message: "Game over", winner: userid });
+            console.log("Game over! Player", userid, "wins!");
         }
 
         mostRecentShot = new xy(x, y); // Store the most recent shot taken
-        res.status(200).json({ message: "Shot taken", hit: hit, sunkShip: sunkShip, gameOver: game.gameOver});
+        res.status(200)
+            .json({ message: "Shot taken", hit: hit, sunkShip: sunkShip, gameOver: game.gameOver });
+
     } else {
         res.status(404).json({ message: "Game not found" });
     }
